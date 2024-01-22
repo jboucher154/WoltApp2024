@@ -28,3 +28,6 @@ Run program:
 	> localhost:8000/docs
 
 To run tests:
+
+from project root run 
+> pytest

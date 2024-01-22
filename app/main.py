@@ -1,5 +1,5 @@
 # import json
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import datetime
@@ -14,7 +14,7 @@ class OrderDetails(BaseModel):
 	cart_value: int = Field(description="The total cart value in cents", ge=0)
 	delivery_distance: int = Field(descirption="The distance between the store and customer's location in meters", ge=0)
 	number_of_items: int = Field(description="The number of items in the customer's shopping cart", ge=0)
-	time: str = Field(description="Order time in UTC in ISO format")
+	time_str: str = Field(description="Order time in UTC in ISO format")
 
 	model_config = {
 		"json_schema_extra": {
@@ -23,22 +23,30 @@ class OrderDetails(BaseModel):
 					"cart_value":790,
 					"delivery_distance":2235,
 					"number_of_items":4,
-					"time":"2024-01-15T13:00:00Z",
+					"time_str":"2024-01-15T13:00:00Z",
 				}
 			]
 		}
 	}
 
-def test_time(order_time):
-	order_time_date = datetime.datetime.fromtimestamp(order_time)
-	print("Order day: ", order_time_date.weekday())
+# inclusing of 1900 or just till 1859?
+# is beyond today?
+def is_friday_rush_hours(order_time: str) -> bool:
+	rush_hour_range = range(15, 19)
+	order_time_converted = iso8601.parse_date(order_time)
+	if order_time_converted.weekday() == 4 and order_time_converted.hour in rush_hour_range:
+		print(order_time_converted.hour, ":", order_time_converted.min)
+		return True
+	return False
 
-@app.post("/delivery-fee") #what uri?
-def calculate_delivery_fee(order_details: OrderDetails):
-	# print(order_details)
-	print(order_details.cart_value, order_details.delivery_distance, order_details.number_of_items, order_details.time)
-	order_time = iso8601.parse_date(order_details.time)
-	print("Order day: ", order_time.weekday())
+@app.post("/delivery-fee") #what uri? snake case?
+def calculate_delivery_fee(order_details: OrderDetails) -> Response:
+	try:
+		is_rush_hour_order = is_friday_rush_hours(order_details.time_str)
+		print("Order day is friday: ", is_rush_hour_order)
+	except iso8601.iso8601.ParseError as e:
+		return JSONResponse(status_code=422, content={"error": "invalid date formating"}) #how to correctly return error case?
+	
 	return JSONResponse(status_code=201, content={"delivery_fee": "Hello!"})
 
 
