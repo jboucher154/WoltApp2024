@@ -1,0 +1,28 @@
+version: '3.9'
+
+volumes:
+  delivery-fee-code:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: bind
+      device: ./app
+
+  test-code:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: bind
+      device: ./tests
+
+services:
+  delivery-fee-calculator:
+    image: wolt-application-2024-jenny-boucher
+    container_name: wolt-application-2024-jenny-boucher_c
+    build: .
+    ports:
+      - 127.0.0.1:8000:8000
+    command: uvicorn --host 0.0.0.0 --port 8000 app.main:app --reload
+    volumes:
+      - delivery-fee-code:/code/app
+      - test-code:/code/tests
