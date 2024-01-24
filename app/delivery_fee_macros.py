@@ -43,7 +43,7 @@ BULK_ORDER_THRESHOLD = 12
 Fee in cents of the one time bulk order fee
 120 = 1.20€
 '''
-BULK_ORDER_THRESHOLD = 120
+BULK_ORDER_FEE = 120
 
 #### DISTANCE FEES AND RELATED MEASUREMENTS ####
 '''
@@ -91,3 +91,8 @@ Must be < RUSH_HOUR_END.
 if this == 19 then rush hours end are not charged from 19:00 (7pm)
 '''
 RUSH_HOUR_END = 19
+
+'''
+Rate to multiply the delivery fee total by to apply rate increase
+'''
+RUSH_HOUR_MULTIPLIER = 1.2
