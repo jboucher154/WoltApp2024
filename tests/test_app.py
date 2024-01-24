@@ -1,142 +1,15 @@
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from main import is_rush_hours, app, calculate_distance_fees, check_for_small_order_fee, calculate_item_count_surcharges
-import pytest
-import json
+from main import app
 import delivery_fee_macros
 
 def get_client():
 	return TestClient(app)
 
-'''
-#  Tests for `is_rush_hours' function
-- tests written for Rush hours friday 15:00 - 19:00
-'''
-@pytest.mark.parametrize("not_rush_hours", [
-	"2024-01-15T13:00:00Z",
-	"2024-01-21T15:00:00Z",
-	"2024-01-19T13:00:00Z",
-	"2024-01-19T19:00:00Z"
-])
-
-def test_is_rush_hours_not_rush_hours(not_rush_hours):
-	assert is_rush_hours(not_rush_hours) ==  False
-
-@pytest.mark.parametrize("rush_hours", [
-	"2024-01-19T15:00:00Z",
-	"2024-01-12T16:00:00Z",
-	"2024-01-5T18:59:00Z",
-	"2024-01-5T15:01:00Z"
-])
-
-def test_is_friday_rush_hours_rush_hours(rush_hours):
-	assert is_rush_hours(rush_hours) == True
-
-
-# NOTE: tests for bad dates (old, future, not formatted corrrectly) , on edge of range times
-
-'''
-#  Tests for `calculate_distance_fees' function
-- test writtin with BASE_DISTANCE of 1000 meters before addtional fees
-'''
-
-@pytest.mark.parametrize("min_fees", [
-	0, 50, 500, 900, 999, 1000
-])
-def test_calculate_distance_fees_minimum_fees(min_fees):
-	assert calculate_distance_fees(min_fees) == delivery_fee_macros.BASE_DISTANCE_FEE
-
-@pytest.mark.parametrize("larger_fees", [
-	1001, 1300, 1500, 1501, 2000, 2499
-])
-def test_calculate_distance_fees_not_minimum_fees(larger_fees):
-	assert calculate_distance_fees(larger_fees) != delivery_fee_macros.BASE_DISTANCE_FEE
-
-def test_calculate_distance_fees_one_extra_fee():
-	distance = 1001
-	assert calculate_distance_fees(distance) == delivery_fee_macros.BASE_DISTANCE_FEE + delivery_fee_macros.ADDITIONAL_DISTANCE_FEE
-
-def test_calculate_distance_fees_two_extra_fees():
-	distance = 1501
-	assert calculate_distance_fees(distance) == delivery_fee_macros.BASE_DISTANCE_FEE + (delivery_fee_macros.ADDITIONAL_DISTANCE_FEE * 2)
-
-def test_calculate_distance_fees_4500():
-	distance = 4500
-	expected = delivery_fee_macros.BASE_DISTANCE_FEE + (delivery_fee_macros.ADDITIONAL_DISTANCE_FEE * 7)
-	fees = calculate_distance_fees(distance)
-	assert fees == expected
-
-def test_calculate_distance_fees_4501():
-	distance = 4501
-	expected = delivery_fee_macros.BASE_DISTANCE_FEE + (delivery_fee_macros.ADDITIONAL_DISTANCE_FEE * 8)
-	fees = calculate_distance_fees(distance)
-	assert fees == expected
-
-'''
-# Tests for check_for_small_order_fee func
-setup for small order threshold of 1000 cents or 10€
-'''
-
-@pytest.mark.parametrize("normal_orders", [
-	1300, 2000, 1000, 1001
-])
-
-def test_check_for_small_order_fee_not_applied(normal_orders):
-	assert check_for_small_order_fee(normal_orders) == 0
-
-@pytest.mark.parametrize("small_orders", [
-	700, 999, 1, 300, 75
-])
-
-def test_check_for_small_order_fee_applied(small_orders):
-	assert check_for_small_order_fee(small_orders) != 0
-
-def test_check_for_small_order_fee_exact_425():
-	cart_value = 425
-	expected = delivery_fee_macros.SMALL_ORDER_THRESHOLD - cart_value
-	res = check_for_small_order_fee(cart_value)
-	assert res == expected
-
-def test_check_for_small_order_fee_exact_999():
-	cart_value = 999
-	expected = delivery_fee_macros.SMALL_ORDER_THRESHOLD - cart_value
-	res = check_for_small_order_fee(cart_value)
-	assert res == expected
-
-'''
-#	Tests for calculate_item_count_surcharges
-- test cases writted with large order surchages starting at 5 items and 
-bulk order starting at 13
-'''
-
-@pytest.mark.parametrize("no_charges", [
-	1, 2, 3, 4
-])
-
-def test_calculate_item_count_surcharges_none(no_charges):
-	assert calculate_item_count_surcharges(no_charges) == 0
-
-@pytest.mark.parametrize("large_charges, expected_number_of_fees", [
-	(5, 1), (6, 2), (7, 3), (8, 4), (9, 5), (10, 6), (11, 7)
-])
-
-def test_calculate_item_count_surcharges_large(large_charges, expected_number_of_fees):
-	assert calculate_item_count_surcharges(large_charges) == expected_number_of_fees * delivery_fee_macros.LARGE_ORDER_ITEM_FEE
-
-@pytest.mark.parametrize("mixed_charges, expected_num_fees_to_apply", [
-	(3, 0), (6, 2), (1, 0), (12, 8), (15, 11), (13, 9)
-])
-
-def test_calculate_item_count_surcharges_none(mixed_charges, expected_num_fees_to_apply):
-	expected = expected_num_fees_to_apply * delivery_fee_macros.LARGE_ORDER_ITEM_FEE
-	if mixed_charges > delivery_fee_macros.BULK_ORDER_THRESHOLD:
-		expected += delivery_fee_macros.BULK_ORDER_FEE
-	res = calculate_item_count_surcharges(mixed_charges)
-	assert res == expected
-
-'''
+"""
 #	Tests for POST method
-'''
+"""
 
 def test_free_delivery_yes():
 	client = get_client()
@@ -159,10 +32,37 @@ def test_max_delivery_price():
 	assert response.status_code == 201
 	assert response.json()["delivery_fee"] == delivery_fee_macros.MAXIMUM_DELIVERY_FEE
 
-# tests for bad inputs
-# {
-#   "cart_value": 790,
-#   "delivery_distance": 2235,
-#   "number_of_items": 4,
-#   "time": "2024-0T13:00:00Z"
-# }
+@pytest.mark.parametrize("bad_requests", [
+	{"cart_value": -790, "delivery_distance": 2235, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"},
+	{"cart_value": 790, "delivery_distance": -2235, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"},
+	{"cart_value": 790, "delivery_distance": 2235, "number_of_items": 0, "time": "2024-01-15T13:00:00Z"},
+	{"cart_value": 790, "delivery_distance": 2235, "number_of_items": -1, "time": "2024-01-15T13:00:00Z"},
+	{"cart_value": 790, "delivery_distance": 2235, "number_of_items": 4, "time": "01-15T13:00:00Z"}
+])
+
+def test_incorrect_inputs(bad_requests):
+	client = get_client()
+	response = client.post("/delivery-fee", json = bad_requests)
+	assert response.status_code == 422
+
+@pytest.mark.parametrize("good_requests, fee", [
+		({"cart_value": 790, "delivery_distance": 2235, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 710),
+		({"cart_value": 1000, "delivery_distance": 1499, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 300),
+		({"cart_value": 1000, "delivery_distance": 1500, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 300),
+		({"cart_value": 1200, "delivery_distance": 1501, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 400),
+		({"cart_value": 1700, "delivery_distance": 500, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 200),
+		({"cart_value": 1050, "delivery_distance": 500, "number_of_items": 5, "time": "2024-01-15T13:00:00Z"}, 250),
+		({"cart_value": 1100, "delivery_distance": 500, "number_of_items": 10, "time": "2024-01-15T13:00:00Z"}, 500),
+		({"cart_value": 2000, "delivery_distance": 500, "number_of_items": 13, "time": "2024-01-15T13:00:00Z"}, 770),
+		({"cart_value": 150, "delivery_distance": 6500, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 1500),
+		({"cart_value": 1000, "delivery_distance": 500, "number_of_items": 4, "time": "2024-01-26T15:00:00Z"}, 240),
+		({"cart_value": 5060, "delivery_distance": 500, "number_of_items": 3, "time": "2024-01-26T13:00:00Z"}, 200),
+		({"cart_value": 0, "delivery_distance": 500, "number_of_items": 4, "time": "2024-01-15T13:00:00Z"}, 1200)
+])
+
+def test_correct_inputs(good_requests, fee):
+	client = get_client()
+	response = client.post("/delivery-fee", json = good_requests)
+	assert response.status_code == 201
+	payload = response.json()
+	assert payload["delivery_fee"] == fee

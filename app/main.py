@@ -1,4 +1,3 @@
-# import json
 from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -12,13 +11,13 @@ DEBUG = True
 
 app = FastAPI(title="Delivery Fee API")
 
-'''
+"""
 OrderDetails class maps to fields in POST request body for delivery fee calculation
-'''
+"""
 class OrderDetails(BaseModel):
 	cart_value: int = Field(description="The total cart value in cents", ge=0)
 	delivery_distance: int = Field(descirption="The distance between the store and customer's location in meters", ge=0)
-	number_of_items: int = Field(description="The number of items in the customer's shopping cart", ge=0)
+	number_of_items: int = Field(description="The number of items in the customer's shopping cart", ge=1)
 	time: str = Field(description="Order time in UTC in ISO format")
 
 	model_config = {
@@ -34,11 +33,11 @@ class OrderDetails(BaseModel):
 		}
 	}
 
-'''
+"""
 # is_rush_hours
 input: string of ISO formated date, e.g. "2024-01-15T13:00:00Z"
 output: bool indicating if time of order is during rush hours
-'''
+"""
 def is_rush_hours(order_time: str) -> bool:
 	rush_hour_range = range(delivery_fee_macros.RUSH_HOUR_BEGIN, delivery_fee_macros.RUSH_HOUR_END)
 	order_time_converted = iso8601.parse_date(order_time)
@@ -47,13 +46,13 @@ def is_rush_hours(order_time: str) -> bool:
 		return True
 	return False
 
-'''
+"""
 # calculate_distance_fees
 input: int of total delivery distance in meters
 output: int of total delivery fees for distance in cents
 - uses BASE_DISTANCE_FEE, BASE_DISTANCE, ADDITIONAL_DISTANCE_UNIT, ADDITIONAL_DISTANCE_FEE
 to calculate all fees for distance
-'''
+"""
 def calculate_distance_fees(delivery_distance: int) -> int:
 	fees = delivery_fee_macros.BASE_DISTANCE_FEE
 	extra_fees = 0
@@ -64,13 +63,13 @@ def calculate_distance_fees(delivery_distance: int) -> int:
 		extra_fees = delivery_fee_macros.ADDITIONAL_DISTANCE_FEE * num_extra_fees
 	return fees + extra_fees
 
-'''
+"""
 # check_for_small_order_fee
 input: int of cart value
 output: int of fee to be added to delivery fee total
 if cart value if less than the SMALL_ORDER_THRESHOLD the fee is calculated
 to to be the SMALL_ORDER_THRESHOLD - the cart value
-'''
+"""
 def check_for_small_order_fee(cart_value: int) -> int:
 	fee = 0
 	
@@ -78,11 +77,11 @@ def check_for_small_order_fee(cart_value: int) -> int:
 		fee = delivery_fee_macros.SMALL_ORDER_THRESHOLD - cart_value
 	return fee
 
-'''
+"""
 # calculate_item_count_surcharges
 input: int of number of items in cart
 output: int of total fees applied for item count in cents
-'''
+"""
 def calculate_item_count_surcharges(item_count: int) -> int:
 	fees = 0
 	if item_count > delivery_fee_macros.LARGE_ORDER_THRESHOLD:
@@ -92,9 +91,9 @@ def calculate_item_count_surcharges(item_count: int) -> int:
 		fees += delivery_fee_macros.BULK_ORDER_FEE
 	return fees
 
-'''
+"""
 #
-'''
+"""
 @app.post("/delivery-fee") #what uri?
 def calculate_delivery_fee(order_details: OrderDetails) -> Response:
 	fee = 0
@@ -143,9 +142,9 @@ if __name__ == "__main__":
 #   ]
 # }
 		
-'''
+"""
 im sending for bad date:
 {
   "msg": "invalid date formating. Provide iso8601 formatting in UTC"
 }
-'''
+"""
