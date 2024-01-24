@@ -1,6 +1,6 @@
 # WoltApp2024 Backend Application 
 
-Applicant: Jenny Boucher[https://www.github.com/jboucher154]
+Applicant: (Jenny Boucher)[https://www.github.com/jboucher154]
 
 Technologies used: 
 - Python 3.10
