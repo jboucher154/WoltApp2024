@@ -1,16 +1,17 @@
 # WoltApp2024 Backend Application 
 
-Applicant: Jenny Boucher
+Applicant: Jenny Boucher[https://www.github.com/jboucher154]
 
 Technologies used: 
-- Python3.10 with FastAPI
+- Python 3.10
+- FastAPI 0.108.0
 - Pytest 7.4.4
 
-Thank you for considering my application to Wolt as a backend engineer intern. I do not have extensive experience working with Python, but found....
+Thank you for considering my application to Wolt as a backend engineer intern!
 
 ## To Run Program
 
-- change ports to be compatible for your local setup, default is set to 8000
+- change ports to be compatible for your local setup, default is set to 8000 in commands given and in docker-compose.yml
 
 ### For local venv:
 
@@ -24,11 +25,10 @@ Thank you for considering my application to Wolt as a backend engineer intern. I
 
 > uvicorn --host 0.0.0.0 --port 8000 app.main:app --reload
 
-	To test POST api endpoint navigate to:
-	> localhost:8000 ...
-	
-	To view FastAPI docs
-	> localhost:8000/docs
+To test POST api endpoint navigate to the FastAPI docs OR use curl or equvalent from the command line
+
+To view FastAPI docs
+> localhost:8000/docs
 
 ### For Docker:
 
@@ -48,5 +48,5 @@ To run tests:
 
 from project root run:
 > pytest
- OR for more detailed output
+OR for more detailed output
 > pytest -v 

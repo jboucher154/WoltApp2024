@@ -6,7 +6,7 @@ import iso8601
 import delivery_fee_macros
 from math import ceil
 
-# macro to attach debugger debugpy 1.8.0
+# macro to attach debugger
 DEBUG = True
 
 app = FastAPI(title="Delivery Fee API")
@@ -122,29 +122,3 @@ if __name__ == "__main__":
 		# debugpy.listen(5678)
 		# debugpy.wait_for_client()
 		print("debugging session complete")
-
-# error msg for bad cart value
-# {
-#   "detail": [
-#     {
-#       "type": "greater_than_equal",
-#       "loc": [
-#         "body",
-#         "cart_value"
-#       ],
-#       "msg": "Input should be greater than or equal to 0",
-#       "input": -790,
-#       "ctx": {
-#         "ge": 0
-#       },
-#       "url": "https://errors.pydantic.dev/2.5/v/greater_than_equal"
-#     }
-#   ]
-# }
-		
-"""
-im sending for bad date:
-{
-  "msg": "invalid date formating. Provide iso8601 formatting in UTC"
-}
-"""
