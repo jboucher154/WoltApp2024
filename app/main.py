@@ -6,9 +6,6 @@ import delivery_fee_macros
 from math import ceil
 
 
-# macro to attach debugger
-DEBUG = True
-
 app = FastAPI(title="Delivery Fee API")
 
 
@@ -163,15 +160,3 @@ def calculate_delivery_fee(
     if fee > delivery_fee_macros.MAXIMUM_DELIVERY_FEE:
         fee = delivery_fee_macros.MAXIMUM_DELIVERY_FEE
     return JSONResponse(status_code=201, content={"delivery_fee": fee})
-
-
-if __name__ == "__main__":
-    if DEBUG:
-        import uvicorn
-
-        uvicorn.run(app, host="0.0.0.0", port=8000)
-        # import debugpy
-        # # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
-        # debugpy.listen(5678)
-        # debugpy.wait_for_client()
-        print("debugging session complete")
