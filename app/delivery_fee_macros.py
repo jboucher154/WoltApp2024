@@ -1,4 +1,5 @@
-#### MAX FEE and FREE THRESHOLD ####
+
+# MAX FEE and FREE THRESHOLD #
 
 MAXIMUM_DELIVERY_FEE = 1500
 """
@@ -13,7 +14,7 @@ A cart of equal or greater value will have no delivery fee.
 20000 = 200€
 """
 
-#### ORDER SIZE AND RELATED FEES ####
+# ORDER SIZE AND RELATED FEES #
 SMALL_ORDER_THRESHOLD = 1000
 """
 Integer representing minimum price in cents to not be charged 
@@ -46,7 +47,7 @@ Fee in cents of the one time bulk order fee
 120 = 1.20€
 """
 
-#### DISTANCE FEES AND RELATED MEASUREMENTS ####
+# DISTANCE FEES AND RELATED MEASUREMENTS #
 
 BASE_DISTANCE_FEE = 200
 """
@@ -71,14 +72,14 @@ Length in meters that will invoke additional delivery fee
 Important: If set to 0 no additional fees will be applied
 """
 
-#### RUSH HOUR SETTINGS ####
+# RUSH HOUR SETTINGS #
 
 RUSH_DAY = 4
 """
 Day that rush hours occur on.
-Given integer coorosponding to datetime object mapping of days
-	0 = Monday, 1 = Tuesday, 2 = Wednesday, 3 = Thursday, 
-	4 = Friday, 5 = Saturday, 6 = Sunday
+Given integer corresponding to datetime object mapping of days
+    0 = Monday, 1 = Tuesday, 2 = Wednesday, 3 = Thursday, 
+    4 = Friday, 5 = Saturday, 6 = Sunday
 """
 
 RUSH_HOUR_BEGIN = 15

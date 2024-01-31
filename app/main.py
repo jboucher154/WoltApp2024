@@ -5,6 +5,7 @@ import iso8601
 import delivery_fee_macros
 from math import ceil
 
+
 # macro to attach debugger
 DEBUG = True
 
@@ -16,9 +17,15 @@ class OrderDetails(BaseModel):
     OrderDetails class inherits from pydantic BaseModel and maps to fields in
     POST request body for delivery fee calculation
     """
+
     cart_value: int = Field(description="The total cart value in cents", ge=0)
-    delivery_distance: int = Field(descirption="The distance between the store and customer's location in meters", ge=0)
-    number_of_items: int = Field(description="The number of items in the customer's shopping cart", ge=1)
+    delivery_distance: int = Field(
+        descirption="The distance between the store and customer's location in meters",
+        ge=0,
+    )
+    number_of_items: int = Field(
+        description="The number of items in the customer's shopping cart", ge=1
+    )
     time: str = Field(description="Order time in UTC in ISO format")
 
     model_config = {
@@ -45,9 +52,14 @@ def is_rush_hours(order_time: str) -> bool:
     :param order_time: string of ISO formated date, e.g. "2024-01-15T13:00:00Z"
     :return: bool indicating if time of order is during rush hours
     """
-    rush_hour_range = range(delivery_fee_macros.RUSH_HOUR_BEGIN, delivery_fee_macros.RUSH_HOUR_END)
+    rush_hour_range = range(
+        delivery_fee_macros.RUSH_HOUR_BEGIN, delivery_fee_macros.RUSH_HOUR_END
+    )
     order_time_converted = iso8601.parse_date(order_time)
-    if order_time_converted.weekday() == delivery_fee_macros.RUSH_DAY and order_time_converted.hour in rush_hour_range:
+    if (
+        order_time_converted.weekday() == delivery_fee_macros.RUSH_DAY
+        and order_time_converted.hour in rush_hour_range
+    ):
         print(order_time_converted.hour, ":", order_time_converted.min)
         return True
     return False
@@ -68,7 +80,10 @@ def calculate_distance_fees(delivery_distance: int) -> int:
     fees = delivery_fee_macros.BASE_DISTANCE_FEE
     extra_fees = 0
 
-    if delivery_distance > delivery_fee_macros.BASE_DISTANCE and delivery_fee_macros.ADDITIONAL_DISTANCE_UNIT != 0:
+    if (
+        delivery_distance > delivery_fee_macros.BASE_DISTANCE
+        and delivery_fee_macros.ADDITIONAL_DISTANCE_UNIT != 0
+    ):
         distance = delivery_distance - delivery_fee_macros.BASE_DISTANCE
         num_extra_fees = ceil(distance / delivery_fee_macros.ADDITIONAL_DISTANCE_UNIT)
         extra_fees = delivery_fee_macros.ADDITIONAL_DISTANCE_FEE * num_extra_fees
@@ -79,7 +94,7 @@ def check_for_small_order_fee(cart_value: int) -> int:
     """
     Checks if the value of the cart qulaifies as a small order using the constant
     SMALL_ORDER_THRESHOLD from the delivery_fee_macros. The returned fee is calculated
-    to to be the SMALL_ORDER_THRESHOLD - the cart value.
+    to be the SMALL_ORDER_THRESHOLD - the cart value.
 
     :param cart_value: int of cart value
     :return: int of fee to be added to delivery fee total
@@ -109,13 +124,17 @@ def calculate_item_count_surcharges(item_count: int) -> int:
     return fees
 
 
-@app.post("/delivery-fee",
-          summary="calculates delivery fee based for an order",
-          description="Applies all relevant fees based on the order details JSON data including delivery_fee")
-def calculate_delivery_fee(order_details: OrderDetails = Body(
-    title="order details",
-    description="order details in JSON format containing cart value, delivery distance, "
-                "number of items, and the date in ISO8601 format")
+@app.post(
+    "/delivery-fee",
+    summary="calculates delivery fee based for an order",
+    description="Applies all relevant fees based on the order details JSON data including delivery_fee",
+)
+def calculate_delivery_fee(
+    order_details: OrderDetails = Body(
+        title="order details",
+        description="order details in JSON format containing cart value, delivery distance, "
+        "number of items, and the date in ISO8601 format",
+    )
 ) -> Response:
     """
     POST method for /delivery-fee location. Applies all relevant fees based on the order details
@@ -135,8 +154,12 @@ def calculate_delivery_fee(order_details: OrderDetails = Body(
             if is_rush_hour_order:
                 fee *= delivery_fee_macros.RUSH_HOUR_MULTIPLIER
     except iso8601.iso8601.ParseError as e:
-        return JSONResponse(status_code=422, content={
-            "detail": "Invalid date formating. Provide iso8601 formatting in UTC"})  # how to correctly return error case?
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": "Invalid date formating. Provide iso8601 formatting in UTC"
+            },
+        )  # how to correctly return error case?
     if fee > delivery_fee_macros.MAXIMUM_DELIVERY_FEE:
         fee = delivery_fee_macros.MAXIMUM_DELIVERY_FEE
     return JSONResponse(status_code=201, content={"delivery_fee": fee})
