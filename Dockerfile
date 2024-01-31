@@ -10,4 +10,4 @@ COPY app ./app/
 
 COPY tests ./tests/
 
-# no expose port here?
+ENV PYTHONPATH "${PYTHONPATH}:/code/app"
