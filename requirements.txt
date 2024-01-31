@@ -1,7 +1,7 @@
 fastapi==0.108.0 # pentultimate version
-uvicorn==0.25.0 # to run simple server [standard]??
+uvicorn==0.25.0 # to run simple server
 pydantic==2.5.3 # for typing and validation
 httpx==0.26.0 # for testing
 pytest==7.4.4 # for testing
-debugpy==1.8.0 #for debug development
+pytest-cov==4.1.0 # for testing coverage report
 iso8601==2.1.0 #for date conversion
