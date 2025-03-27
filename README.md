@@ -27,9 +27,9 @@ I chose to allow the following:
 - Change ports to be compatible with your local setup.
 - The default is set to 8000 in commands given and in docker-compose.yml
 
-### For local venv:  
+### For local venv
 
-#### Setup virtual environment at the root of the project:
+#### Setup virtual environment at the root of the project
 
 For Mac/Linux:  
 
@@ -55,30 +55,27 @@ pip install -r requirements.txt
 set PYTHONPATH=path\to\project\root\app
 ```
 
-#### Run program:  
+#### Run program
 
 ```bash
 uvicorn --host 0.0.0.0 --port 8000 app.main:app --reload
 ```
 
-To test the POST API endpoint, navigate to the FastAPI docs OR use 
-curl or equivalent from the command line
+To test the POST API endpoint, navigate to the FastAPI docs OR use curl or equivalent from the command line.
 
 To view FastAPI docs
 ```bash
 localhost:8000/docs
 ```
 
-When complete, deactivate the virtual environment with the command: 
-```
+When complete, deactivate the virtual environment with the command:
+```bash
 deactivate
 ```
 
-### For Docker:  
+### For Docker 
 
-If you prefer to test the assignment in a docker container, 
-you can create the image and run it using the provided Dockerfile and 
-docker-compose.
+If you prefer to test the assignment in a docker container, you can create the image and run it using the provided Dockerfile and docker-compose.
 
 ```bash
 docker compose up
@@ -93,8 +90,7 @@ docker compose down
 ## Tests
 
 Tests are written for the individual functions in the `test_functions.py`
-file. Tests that use a test client from FastAPI are in the `test_app.py` 
-file.
+file. Tests that use a test client from FastAPI are in the `test_app.py` file.
 
 To run tests in the venv, from project root run:
 ```bash
@@ -103,10 +99,9 @@ pytest
 For more detailed output:
 ```bash
 pytest -v
-``` 
+```
 For test with coverage report in html:
 ```bash
 pytest  pytest --cov=app --cov-report html
 ```
-- The report will be in a `htmlcov` directory in the root of the project. 
-Open the index in your browser of choice to view the report.
+- The report will be in a `htmlcov` directory in the root of the project. Open the index in your browser of choice to view the report.
