@@ -100,7 +100,7 @@ For more detailed output:
 ```bash
 pytest -v
 ```
-For test with coverage report in html:
+For test with coverage report in HTML:
 ```bash
 pytest  pytest --cov=app --cov-report html
 ```
