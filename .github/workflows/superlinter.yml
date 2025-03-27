@@ -27,3 +27,9 @@ jobs:
         env: 
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linter Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: super-linter-report
+          path: super-linter-output/super-linter-summary.md
