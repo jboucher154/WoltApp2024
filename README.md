@@ -73,7 +73,7 @@ When complete, deactivate the virtual environment with the command:
 deactivate
 ```
 
-### For Docker 
+### For Docker
 
 If you prefer to test the assignment in a docker container, you can create the image and run it using the provided Dockerfile and docker-compose.
 
