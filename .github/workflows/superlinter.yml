@@ -1,8 +1,12 @@
 name: Super-Linter
 
 on:
-  push: null
-  pull_request: null
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 permissions: {}
 
